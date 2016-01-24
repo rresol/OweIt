@@ -1,96 +1,163 @@
-__author__ = 'irresolute'
+__author__ = 'rresol'
+__email__  = 'shashank.kumar.apc13@itbhu.ac.in'
 
-import gtk,sys,acnt,shelve
+import pygtk
+pygtk.require('2.0')
+import gtk,acnt
 
-class MyApp(gtk.Window):
-        def __init__(self):
-            super(MyApp,self).__init__()
-            
-            self.set_title("Account Manager")
-            self.set_size_request(1000,1000)
-            self.set_position(gtk.WIN_POS_CENTER)
+class pops:
+    def __init__(self,function_name):
+        self.title = function_name
 
-            btn1 = gtk.Button("Credit")
-            btn2 = gtk.Button("Debit")
-            btn3 = gtk.Button("Expense")
-            
-            fixed= gtk.Fixed()
-            fixed.put(btn1,150,20)
-            fixed.put(btn2,450,20)
-            fixed.put(btn3,750,20)
+    def on_add_click(self,widget,entry1,entry2):    
+        entry1.set_activates_default(True)
+        entry2.set_activates_default(True)
+        name = entry1.get_text()
+        amount = int(entry2.get_text())
+        func = self.title.lower()
+        if func == 'credit':
+            acnt.credit(name,amount)
+        elif func == 'debit':
+            print 'HI'
+            acnt.debit(name,amount)
 
-            btn1.set_tooltip_text("Money they Owe.")
-            btn2.set_tooltip_text("Money you Owe.")
-            btn3.set_tooltip_text("Money spent.")
-            
-            #self.set_tooltip_text("Manages your daily transactions .")
-            
-            try:
-                self.set_icon_from_file("acnt.jpg")
-            except Exception , e:
-                print e.message
-                sys.exit(1)
+    def function_call(self,widget,data=None):
+        popup = gtk.Window()
+        popup.set_title("self.title")
 
-            #Creating the ListView 
+        hbox = gtk.HBox(False,0)
+        hbox.set_border_width(10)
 
-            vbox =  gtk.VBox(False,8)
-
-            sw = gtk.ScrolledWindow()
-            sw.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-            sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
-
-            vbox.pack_start(sw,True,True,0)
-
-            store = self.create_model()
-            
-            treeView = gtk.TreeView(store)
-            treeView.connect("row-activated",self.on_activated)
-            treeView.set_rules_hint(True)
-            sw.add(treeView)
-
-            self.create_columns(treeView)
-            self.statusbar = gtk.Statusbar()
-            
-            vbox.pack_start(self.statusbar,False,False,0)
-            
-            self.add(vbox)
-            
-            self.connect("destroy",gtk.main_quit)
-            self.add(fixed)
-            
-            self.show_all()
-        
-        def create_model(self):
-            store = gtk.ListStore(str,int)
-            f = shelve.open("Credit")
-            klist = f.keys()
-            for k in klist:
-                print k
-                store.append(k,f[key])
-            return store
-
-        def create_columns(self,treeView):
-            
-            rendererText = gtk.CellRendererText()
-            column = gtk.TreeViewColumn("Name",rendererText,text =0)
-            column.set_sort_column_id(0)
-            treeView.append_column(column)
+        #Adding text entry dialog
+        vbox1 = gtk.VBox(False,0)
     
-            rendererText = gtk.CellRendererText()
-            column = gtk.TreeViewColumn("Amount",rendererText,text=1)
-            column.set_sort_column_id(1)
-            treeView.append_column(column)
-        
-        def on_activated(self,widget,row,col):
-            
-            model = widget.get_model()
-            text = model[row][0]+", " + str(model[row][1])
-            self.statusbar.push(0,text) 
-        
-            self.connect("destroy",gtk.main_quit)
-            self.add(fixed)
-            
-            self.show_all()
+        #vbox.set_border_width()
+        label = gtk.Label("Name")
+        vbox1.pack_start(label)
+        label.show()
+        entry1 = gtk.Entry()
+        vbox1.pack_start(entry1,False,False,0)
+        hbox.pack_start(vbox1,False,False,0)
+        entry1.show()
+        vbox1.show()
+    
+        vbox2 = gtk.VBox(False,0)
+    
+        #vbox.set_border_width()
+        label = gtk.Label("Amount")
+        vbox2.pack_start(label)
+        label.show()
+        entry2 = gtk.Entry()
+        vbox2.pack_start(entry2)
+        hbox.pack_start(vbox2,False,False,0)
+    
+        vbox2.show()
 
-MyApp()
-gtk.main()
+        #Adding ok button
+        button1 = gtk.Button("Add")
+        button1.connect("clicked",self.on_add_click,entry1,entry2)
+        hbox.pack_start(button1,False,False,0)
+        button1.show()
+    
+
+        popup.add(hbox)
+        popup.set_modal(True)
+        popup.connect("destroy",lambda w: gtk.main_quit())
+        popup.show_all()
+
+
+class MyApp:
+
+    
+    
+
+    
+    
+
+    def __init__(self):
+
+        #Creating the main window
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_title("SubX")
+        self.window.connect("destroy",lambda w:gtk.main_quit())
+        self.window.set_size_request(450,340)
+        vbox = gtk.VBox(False,0)
+        vbox.set_border_width(10)
+        
+        hbox1= gtk.HBox(False,0)
+        hbox1.set_border_width(10)
+        
+        #Adding a button for credit
+        a = pops("Credit")
+        button = gtk.Button("Credit")
+        button.connect("clicked",a.function_call,"Credit")
+        hbox1.pack_start(button,True,True,0)
+        button.show()
+
+        #Adding a button for debit
+        b = pops("Debit")
+        
+        button = gtk.Button("Debit")
+        button.connect("clicked",a.function_call,"Debit")
+        hbox1.pack_start(button,True,True,0)
+        button.show()
+
+        #Adding a button for Expenses
+        c = pops("Expenses")
+
+        button = gtk.Button("Expenses")
+        button.connect("clicked",c.function_call,"Expense")
+        hbox1.pack_start(button,False,False,0)
+        button.show()
+
+        vbox.pack_start(hbox1,False,False,0)
+        #self.window.add(hbox1)
+        
+        hbox1.show()
+        
+        #Adding Will Smith's Quote
+        hbox3 = gtk.HBox(False,0)
+        hbox3.set_border_width(10)
+        
+        image = gtk.Image()
+        image.set_from_file("subx.jpg")
+        hbox3.pack_start(image,False,False,0)
+        image.show()
+
+        image = gtk.Image()
+        image.set_from_file("front.jpeg")
+        hbox3.pack_start(image,False,False,0)
+        image.show() 
+
+        vbox.pack_start(hbox3,False,False,0)
+        #self.window.add(hbox3)
+
+        hbox3.show()
+
+        #Adding a quit button 
+       
+        hbox2 = gtk.HBox(False,0)
+        hbox2.set_border_width(10)
+        
+        button =  gtk.Button("Close")
+        button.connect("clicked",lambda w:gtk.main_quit())
+        hbox2.pack_start(button,True,True,0)
+        button.show()
+        vbox.pack_end(hbox2,False,False,0)
+        #self.window.add(hbox2)
+
+
+        hbox2.show()
+        self.window.add(vbox)
+
+        vbox.show()
+
+        self.window.show()
+
+def main():
+    gtk.main()
+    return 0
+
+if __name__ == '__main__':
+    MyApp()
+    main()

@@ -21,7 +21,7 @@ def credit(name,amount):
         del f[name]
     print 'bal: ' +name + ': '
     if f.has_key(name):
-        print h[name]
+        print f[name]
     else:
         print 'Account Deleted'
 
