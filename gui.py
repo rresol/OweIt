@@ -9,21 +9,25 @@ class pops:
     def __init__(self,function_name):
         self.title = function_name
 
-    def on_add_click(self,widget,entry1,entry2):    
-        entry1.set_activates_default(True)
+    def on_add_click(self,widget,entry1,entry2,data):
+        if entry1:    
+            entry1.set_activates_default(True)
+            name = entry1.get_text()
+        
         entry2.set_activates_default(True)
-        name = entry1.get_text()
         amount = int(entry2.get_text())
-        func = self.title.lower()
-        if func == 'credit':
+        data = data.lower()
+        
+        if data == 'credit':
             acnt.credit(name,amount)
-        elif func == 'debit':
-            print 'HI'
+        elif data == 'debit':
             acnt.debit(name,amount)
+        elif data == 'expense':
+            acnt.expense(amount)
 
     def function_call(self,widget,data=None):
         popup = gtk.Window()
-        popup.set_title("self.title")
+        popup.set_title(data)
 
         hbox = gtk.HBox(False,0)
         hbox.set_border_width(10)
@@ -32,14 +36,16 @@ class pops:
         vbox1 = gtk.VBox(False,0)
     
         #vbox.set_border_width()
-        label = gtk.Label("Name")
-        vbox1.pack_start(label)
-        label.show()
-        entry1 = gtk.Entry()
-        vbox1.pack_start(entry1,False,False,0)
-        hbox.pack_start(vbox1,False,False,0)
-        entry1.show()
-        vbox1.show()
+        entry1 = None
+        if not data =="Expense":
+            label = gtk.Label("Name")
+            vbox1.pack_start(label)
+            label.show()
+            entry1 = gtk.Entry()
+            vbox1.pack_start(entry1,False,False,0)
+            hbox.pack_start(vbox1,False,False,0)
+            entry1.show()
+            vbox1.show()
     
         vbox2 = gtk.VBox(False,0)
     
@@ -55,24 +61,18 @@ class pops:
 
         #Adding ok button
         button1 = gtk.Button("Add")
-        button1.connect("clicked",self.on_add_click,entry1,entry2)
+        button1.connect("clicked",self.on_add_click,entry1,entry2,data)
         hbox.pack_start(button1,False,False,0)
         button1.show()
     
 
         popup.add(hbox)
         popup.set_modal(True)
-        popup.connect("destroy",lambda w: gtk.main_quit())
+        popup.connect("destroy",gtk.Widget.destroy)
         popup.show_all()
 
 
 class MyApp:
-
-    
-    
-
-    
-    
 
     def __init__(self):
 

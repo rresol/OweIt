@@ -1,4 +1,5 @@
-__author__ = 'irresolute'
+__author__ = 'rresol'
+__email__  = 'shashank.kumar.apc13@itbhu.ac.in'
 
 import shelve # managing the database of expenditure
 import datetime
@@ -7,6 +8,7 @@ f = shelve.open('credit')
 g = shelve.open('expense')
 
 #To manage the credit account
+
 
 def credit(name,amount):
 
@@ -81,6 +83,3 @@ if __name__ == '__main__':
     expense(40)
     debit('shas',100)
     net_expense()
-    
-
-            
