@@ -3,7 +3,9 @@ __email__  = 'shashank.kumar.apc13@itbhu.ac.in'
 
 import pygtk
 pygtk.require('2.0')
-import gtk,acnt
+import gtk
+import shelve
+import acnt
 
 class pops:
     def __init__(self,function_name):
@@ -71,6 +73,73 @@ class pops:
         popup.connect("destroy",gtk.Widget.destroy)
         popup.show_all()
 
+class ListViews:
+
+    def __init__(self):
+        pass
+    def listview(self,widget,data):
+        window = gtk.Window()
+
+        window.set_title(data)
+        window.set_size_request(450,340)
+        window.connect("destroy",gtk.Widget.destroy)
+
+        self.store = gtk.ListStore(str,int)
+        self.view  = gtk.TreeView(self.store)
+
+        if not data.lower() == 'expense':
+            self.column    = gtk.TreeViewColumn("Name")
+            self.column1   = gtk.TreeViewColumn("Amount")
+            f = shelve.open('credit')
+        
+        else:
+            self.column    = gtk.TreeViewColumn("Month")
+            self.column1   = gtk.TreeViewColumn("Expense")
+            f  = shelve.open('expense')
+        name = []
+        amount = []
+
+
+        key_list = f.keys()
+
+        for i in key_list:
+            name.append(i)
+            amount.append(f[i])
+
+        for i in range(len(name)):
+            if not data.lower() == 'debit':
+                if amount[i] >0:
+                    self.store.append([name[i],amount[i]])
+            else:
+                if amount[i] < 0:
+                    amount[i] = (-1)*int(amount[i])
+                    self.store.append([name[i],amount[i]])
+        #self.creditstore.append(['Tanmay','293'])
+        #self.creditstore.append(['Harsh','934'])
+
+        self.view.append_column(self.column)
+        self.view.append_column(self.column1)
+
+        self.name_cell = gtk.CellRendererText()
+        self.amount_cell = gtk.CellRendererText()
+
+        self.name_cell.set_property('cell-background','yellow')
+        self.amount_cell.set_property('cell-background','cyan')
+
+       
+
+        self.column.pack_start(self.name_cell,True)
+        self.column1.pack_start(self.amount_cell,True)
+
+        self.column.set_attributes(self.name_cell,text =0)
+        self.column1.set_attributes(self.amount_cell,text =1)
+
+        self.view.set_search_column(0)
+        self.column1.set_sort_column_id(1)
+
+        self.view.set_reorderable(True)
+        window.add(self.view)
+        window.show_all()
 
 class MyApp:
 
@@ -89,8 +158,10 @@ class MyApp:
         
         #Adding a button for credit
         a = pops("Credit")
+        e = ListViews()
         button = gtk.Button("Credit")
         button.connect("clicked",a.function_call,"Credit")
+        button.connect("clicked",e.listview,"Credit")
         hbox1.pack_start(button,True,True,0)
         button.show()
 
@@ -99,6 +170,7 @@ class MyApp:
         
         button = gtk.Button("Debit")
         button.connect("clicked",a.function_call,"Debit")
+        button.connect("clicked",e.listview,"Debit")
         hbox1.pack_start(button,True,True,0)
         button.show()
 
@@ -107,6 +179,7 @@ class MyApp:
 
         button = gtk.Button("Expenses")
         button.connect("clicked",c.function_call,"Expense")
+        button.connect("clicked",e.listview,"Expense")
         hbox1.pack_start(button,False,False,0)
         button.show()
 
