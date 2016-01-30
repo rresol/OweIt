@@ -6,8 +6,6 @@ Clone the repostiory .
 Now execute this :
 python path/to/gui.py
 
-Beta Version .
-
-Alpha Version ?
-
-wait for it... it is coming ;) 
+Still UnderDevelopment .
+Wanna contribute
+Go on ! ;) 
